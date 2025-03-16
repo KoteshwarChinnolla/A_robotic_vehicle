@@ -1,0 +1,170 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #000000;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #ffeb99;
+    margin: 0;
+    padding: 20px;
+}
+.popup {
+    display: none;
+    position: fixed;
+    align-items: center;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #002855;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.6);
+    max-width: 80%;
+    width: 750px;
+}
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 15px;
+    justify-items: center;
+    margin-top: 20px;
+    padding: 10px;
+}
+.grid img {
+    /* width: 100%; */
+    /* max-width: 300px; */
+    height: 250px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: transform 0.3s ease-in-out;
+}
+.grid img:hover {
+    transform: scale(1.1);
+    box-shadow: 0px 5px 10px rgba(255, 255, 255, 0.3);
+}
+button {
+    background-color: #ffcc00;
+    color: #002855;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 12px 20px;
+    border: none;
+    cursor: pointer;
+    margin: 10px;
+    border-radius: 6px;
+    transition: background 0.3s ease;
+}
+button:hover {
+    background-color: #ffaa00;
+}
+.selected-image {
+    display: block;
+    margin: 20px auto;
+    max-width: 600px;
+    border-radius: 6px;
+    box-shadow: 0px 5px 10px rgba(255, 255, 255, 0.3);
+}
+.selected-text {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+#proceedBtn {
+    display: none;
+}
+
+canvas {
+    align-items: center;
+    /* height: 70vh; */
+    border: 2px solid rgb(246, 246, 107);
+}
+/* .canvas {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5vh;
+}
+
+#mazeCanvas {
+    display: block;
+} */
+
+.canvas {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5vh;
+    margin-bottom: 80px; /* Increased bottom margin to create space */
+}
+
+#mazeCanvas {
+    display: block;
+    transform: scale(2); /* Adjust the scale factor as needed */
+    transform-origin: top; /* Ensures scaling from the top-left corner */
+    image-rendering: pixelated; /* Keeps pixels sharp if applicable */
+}
+
+.chat-container {
+    display: none;
+    /* display: flex; */
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 20px; /* Adds space between chat input and canvas */
+}
+
+.chat-input {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 200px; /* Small initial width */
+    height: 30px; /* Small initial height */
+    padding: 5px;
+    background: #ecf0f1;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    overflow: hidden;
+}
+
+.chat-input input {
+    flex-grow: 1;
+    border: none;
+    padding: 5px;
+    font-size: 14px;
+    outline: none;
+    width: 100%;
+    height: 100%;
+}
+
+.chat-input button {
+    padding: 5px;
+    background: #3498db;
+    font-size: 14px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Expanded Chat Input */
+.chat-input.expanded {
+    width: 400px; /* Expands width */
+    height: 80px; /* Expands height */
+    padding: 10px;
+}
+.out-put-test {
+    display: none; /* Initially hidden */
+    width: 300px;
+    padding: 10px;
+    border: 2px solid #3498db;
+    background-color: #ecf0f1;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin: 20px auto; /* Center horizontally */
+}
+.waiting {
+    box-shadow: 0 0 10px 2px rgba(0, 255, 0, 0.8);
+}

@@ -1,0 +1,16 @@
+numpy==1.26.4
+matplotlib
+Pillow
+serial
+langchain
+python-dotenv
+langchain-core
+langchain_community
+langchain_aws
+langchain-groq
+langgraph
+fastapi
+uvicorn
+markdown2
+langgraph-cli[inmem]
+defusedxml

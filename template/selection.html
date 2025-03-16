@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Selector</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    
+    <h1>Image Selector</h1>
+    <button onclick="openPopup()">Select Image</button>
+    <p id="selectedText">No image selected</p>
+    <img class="selected-image" id="selectedImage" src="" alt="">
+    <button id="proceedBtn" onclick="proceed()" >Proceed</button>
+    
+    <div id="popup" class="popup">
+        <h2>Select an Image</h2>
+        <div class="grid" id="imageGrid"></div>
+        <button onclick="closePopup()">Close</button>
+    </div>
+    <div id="chatInput" class="chat-container">
+        <form onsubmit="sendMessage(event); return false;">
+            <div class="chat-input" onclick="expandInput()">
+                <input type="text" id="user-input" placeholder="Type your message..." onblur="shrinkInput()">
+                <button type="submit">Send</button>
+            </div>
+        </form>
+    </div>
+    <div id="chatInput_2" class="chat-container">
+        <div class="chat-input" onclick="expandInput()">
+            <input type="text" id="userInput" placeholder="Type something..." onblur="shrinkInput()">
+            <button onclick="resolveInput()">Submit</button>
+        </div>
+    </div>
+    <div class="out-put-test" id="out-put-test"></div>
+    <div class="canvas">
+    <canvas id="mazeCanvas" width="256" height="256"></canvas>
+    </div>
+    <!-- <div class="controls">
+        <button onclick="resetMaze()">Reset</button>
+    </div> -->
+
+    <script src="images_select.js"></script>
+</body>
+</html>
