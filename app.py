@@ -89,8 +89,11 @@ async def a_star_algo(a_star: a_star):
 
 @app.post("/chatInput")
 async def chatInput(test:text):
-    response=graph.response(test.text,test.name,test.id,"starting")
-    return {"response": response}
+    try:
+        response=graph.response(test.text,test.name,test.id,"starting")
+        return {"response": response}
+    except Exception as e:
+        return {"response": ["please adjust your prompt"]}
 
 @app.post("/status_on")
 async def status_on(status_on:status_on):
@@ -99,13 +102,19 @@ async def status_on(status_on:status_on):
 
 @app.post("/question_for_user")
 async def question_for_user(text:qn_user):
-    response=graph.middle_response(text.text,"",text.name,text.id,type_="mid")
-    return {"response": response}
+    try:
+        response=graph.middle_response(text.text,"",text.name,text.id,type_="mid")
+        return {"response": response}
+    except Exception as e:
+        return {"response": ["please adjust your prompt"]}
 
 @app.post("/user_response")
 async def user_response(text:an_user):
-    response=graph.middle_response(text.text,text.user_response,text.name,text.id,type_="mid")
-    return {"response": response}
+    try:
+        response=graph.middle_response(text.text,text.user_response,text.name,text.id,type_="mid")
+        return {"response": response}
+    except Exception as e:
+        return {"response": ["please adjust your prompt"]}
 
 
 @app.post("/saveLastPath")
@@ -123,6 +132,15 @@ async def save_last_path(end: end):
     # except Exception as e:
     #     print(f"Error saving last path: {e}")
     #     return {"error": str(e)}
+
+@app.get("/getLastPath")
+async def getLastPath():
+    try:
+        with open("lastpossition.json", "r") as file:
+            data = json.load(file)
+            return data
+    except Exception as e:
+        print(f"Error getting last path: {e}")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=5000)

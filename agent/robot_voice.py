@@ -63,7 +63,7 @@ class build_graph():
         self.builder.add_node("update_prev",self.update_prev)
         self.builder.add_conditional_edges(START,self.request_type,{"starting":"request_check","mid":"user_response_fun","end":"update_prev"})
         self.builder.add_conditional_edges("request_check",self.check_for_request,{"route":"clear_instruction","question":"response_message","end":"update_prev"})
-        self.builder.add_conditional_edges("user_response_fun",self.question_answer_condition,{"wait":"update_prev","continue":"update_prev","location":"clear_instruction"})
+        self.builder.add_conditional_edges("user_response_fun",self.question_answer_condition,{"wait":"update_prev","continue":"update_prev","location":"request_check"})
         self.builder.add_edge("update_prev",END)
         self.builder.add_edge("response_message",END)
         self.builder.add_edge("user_response_fun",END)
@@ -188,12 +188,12 @@ class build_graph():
             response='['+response+']'
 
         print(response)
-        last_route=json.loads(answer.content[7:-3])[-1]["route"]
+        last_route=json.loads(response)[-1]["route"]
         messages = state["instructions"]
         # for i in messages:
         #     print(i)
         # print(answer)
-        return {"instructions": [answer.content[7:-3]],"temp_inst":response, "locations_history": [last_route[-1]],"messages_history":[state["messages"][0].content]}
+        return {"instructions": [response],"temp_inst":response, "locations_history": [last_route[-1]],"messages_history":[state["messages"][0].content]}
 
     def status_check(self,state=MessageState):
         status=state["status"]
@@ -315,7 +315,9 @@ class build_graph():
         config={"configurable":{"thread_id":thread_id}}
         status="free"
         response=self.graph.stream({"type_":type_,"status":status},config=config,stream_mode="values")
-        return self.output(response)
+        last_event=[event for event in response]
+
+        return self.output(last_event)
 
     def response(self,message,name,thread_id,type_):
         config={"configurable":{"thread_id":thread_id}}

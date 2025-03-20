@@ -1,4 +1,5 @@
-const API = "http://127.0.0.1:5000/";
+// const API = "http://127.0.0.1:5000/";
+const API ="http://localhost:5000/";
 
 const images = {
     "house": "../images/home_architecture.jpg",
@@ -32,7 +33,7 @@ function speak(text) {
     }
 console.log(Thread_id);
 
-fetch("../lastpossition.json")
+fetch(API + "getLastPath")
   .then(response => response.json())
   .then(data => {
     lastPosition = data;
@@ -77,6 +78,8 @@ function proceed() {
     let chatInput = document.getElementById("chatInput");
     const outputDiv = document.getElementById("out-put-test");
     let chatInput_2 = document.getElementById("chatInput_2");
+    let container = document.getElementById("container");
+    container.style.display = "none";
     chatInput_2.style.display = "none";
     outputDiv.style.display = "block";
     proceedBtn.style.display = "none";
@@ -160,7 +163,6 @@ canvas.addEventListener("click", function(event) {
     });
 
     async function sendMessage(event) {
-        
         if (event) event.preventDefault(); // Prevents page refresh if inside a form
     
         const inputField = document.getElementById("user-input");
@@ -169,7 +171,44 @@ canvas.addEventListener("click", function(event) {
         console.log("Sending message:", message);
         updateText(message);
         inputField.value = "";
+        await post_to_api(message);
+    }
+
+    function startVoiceInput() {
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false; // Only capture final results
+        recognition.continuous = false; // Stop after speech ends
+        recognition.maxAlternatives = 1; 
     
+        let timeout; // Timeout for detecting pause
+    
+        recognition.onstart = function () {
+            document.getElementById("mic-button").style.background = "#2ecc71"; // Indicate listening
+            clearTimeout(timeout); // Reset timeout
+        };
+    
+        recognition.onresult = function (event) {
+            const transcript = event.results[0][0].transcript;
+            document.getElementById("user-input").value = transcript;
+            // Set timeout to stop recognition if user pauses for 2 seconds
+            timeout = setTimeout(() => {
+                recognition.stop();
+            }, 3000);
+            updateText(transcript);
+            post_to_api(transcript);
+            
+        };
+    
+        recognition.onend = function () {
+            document.getElementById("mic-button").style.background = "#e74c3c"; // Reset color
+        };
+    
+        recognition.start();
+    }
+
+    async function post_to_api(message) {
+
         try {
             const response = await fetch(API + "chatInput", {
                 method: 'POST',
@@ -266,12 +305,16 @@ canvas.addEventListener("click", function(event) {
             document.getElementById("user-input").value = "";  // Clear input field after use
         } else if (result1 === "move") {
             updateText(result1);
+        }else{
+            updateText(result1);
         }
     }
     
     function waitForUserInput() {
         return new Promise(resolve => {
             let inputField = document.getElementById("userInput");
+            let micButton = document.getElementById("micButton");
+
             inputField.classList.add("waiting");
             inputField.focus();
             window.resolveInput = function() {
@@ -284,8 +327,42 @@ canvas.addEventListener("click", function(event) {
                     alert("Please enter a message before submitting.");
                 }
             };
+            micButton.onclick = function() {
+                startVoiceInput_wait(resolve);
+            };
         });
     }
+
+    function startVoiceInput_wait(resolve) {
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        recognition.continuous = false;
+    
+        let timeout; // Detect speech pause
+    
+        recognition.onstart = function () {
+            document.getElementById("micButton").style.background = "#2ecc71"; // Change color
+        };
+    
+        recognition.onresult = function (event) {
+            const transcript = event.results[0][0].transcript;
+            document.getElementById("userInput").value = transcript; // Fill input with speech text
+    
+            // Stop recognition if the user pauses for 2 seconds
+            timeout = setTimeout(() => {
+                recognition.stop();
+                resolve(transcript); // Resolve the Promise with speech input
+            }, 3000);
+        };
+    
+        recognition.onend = function () {
+            document.getElementById("micButton").style.background = "#e74c3c"; // Reset color
+        };
+    
+        recognition.start();
+    }
+    
     
     async function wait_until_fun(text) {
 
@@ -358,6 +435,7 @@ canvas.addEventListener("click", function(event) {
     async function plotPath(path) {
         console.log("here is the paths");
         path = path.path;
+        console.log("here is the paths to plot");
         console.log(path);
     
         ctx.beginPath();
@@ -368,7 +446,7 @@ canvas.addEventListener("click", function(event) {
             await delay(100); // Wait for 100ms before drawing the next line
             drawArrow(ctx, path[i - 1][1], path[i - 1][0], path[i][1], path[i][0]);
         }
-    
+        save_last_path();
         return true; // Ensure the function completes properly
     }
     
@@ -376,15 +454,17 @@ canvas.addEventListener("click", function(event) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
     
-
+    async function save_last_path() {
+        fetch(API + "saveLastPath", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ end: String(path[path.length - 1][0] + " " + path[path.length - 1][1]) })
+        });
+    }
 window.addEventListener("beforeunload", function(event) {
-    fetch(API + "saveLastPath", {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ end: String(path[path.length - 1][0] + " " + path[path.length - 1][1]) })
-    });
+    save_last_path();
 
     // Optional: Display a warning before closing (not always reliable in modern browsers)
     event.preventDefault();

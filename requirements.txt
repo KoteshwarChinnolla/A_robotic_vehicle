@@ -12,5 +12,6 @@ langgraph
 fastapi
 uvicorn
 markdown2
-langgraph-cli[inmem]
-defusedxml
+# langgraph-cli[inmem]
+# defusedxml
+duckduckgo-search
