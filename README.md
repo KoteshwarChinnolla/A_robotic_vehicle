@@ -75,6 +75,7 @@ LANG_CHAIN_API_KEY=""
 GROQ_API_KEY=""
 ```
 > **Step 4**: open the docker desktop so that it turns on the docker Engine
+> 
 > **Step 5**:run
 ```python
 docker compose up --build
