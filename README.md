@@ -51,9 +51,36 @@ To make you understand let us consider an example - if the user asks to bring so
 > In this case it has to perform task in task. where it has to make a plan to go to the store room and bring the coffee powder back, then it needs to travel to the bedroom with the coffee as the coffee making is done.
 > 
 > For implementation I used the concept of **Backtracking**
-> 
+
 > *case 2* **Task After Task** (tasks are independent): When should Task 2 be completed if it is instructed to start while Task 1 is still in progress?
 >
 > example: if the vehicle is in the process of bringing coffee to the bedroom if someone instructs it to get the bat from the storeroom to the park. as the tasks are not related to each other it needs to serialise them. one after the other.
 >
 > to make this happen I used the concept of serialisation.
+
+
+# To run it on your local system
+
+> **Step 1** : Install docker on your system
+> 
+> **Step 2** : Clone this repo by using
+```python
+git clone https://github.com/KoteshwarChinnolla/A_robotic_vehicle
+```
+> **Step 3**: " create .env file put Langchain and Groq API key
+```python
+LANG_CHAIN_API_KEY=""
+GROQ_API_KEY=""
+```
+> **Step 4**: open the docker desktop so that it turns on the docker Engine
+> **Step 5**:run
+```python
+docker compose up --build
+```
+> on your terminal
+> 
+> Now run the HTML file (Go live) so that you can access it
+
+
+
+
