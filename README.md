@@ -44,7 +44,8 @@ To make you understand let us consider an example - if the user asks to bring so
 
 **Complex? What complex over here? it is just travelling from one place to another place..** you may get dought like this but I want you to imagene some cases>
 
-> *Case 1.*  **task in task** (tasks are dependent). if it needed to complete some task which is part of its original task.
+> ### *Case 1.*
+>   **task in task** (tasks are dependent). if it needed to complete some task which is part of its original task.
 > 
 > for better understanding let's have an example - same as the previous if someone wants coffee from the kitchen to bedroom . As the vehicle reaches the kitchen when it asks to make coffee, what if the user says that **there is no coffee powder go to the storeroom and bring it back to the kitchen**.
 > 
@@ -52,7 +53,8 @@ To make you understand let us consider an example - if the user asks to bring so
 > 
 > For implementation I used the concept of **Backtracking**
 
-> *case 2* **Task After Task** (tasks are independent): When should Task 2 be completed if it is instructed to start while Task 1 is still in progress?
+> ### *case 2*
+>  **Task After Task** (tasks are independent): When should Task 2 be completed if it is instructed to start while Task 1 is still in progress?
 >
 > example: if the vehicle is in the process of bringing coffee to the bedroom if someone instructs it to get the bat from the storeroom to the park. as the tasks are not related to each other it needs to serialise them. one after the other.
 >
