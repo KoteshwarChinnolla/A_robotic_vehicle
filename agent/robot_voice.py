@@ -36,6 +36,7 @@ class MessageState(TypedDict):
     user_question_type:str
     type_:str
     location:str
+    previous_location:str
     
 
 
@@ -103,7 +104,7 @@ class build_graph():
         # print(state)
         chain = template | self.model
         answer = chain.invoke({"user_input":state["messages"][0].content})
-        print(f"question type: {answer.content}")
+        # print(f"question type: {answer.content}")
         return {"question_type":answer.content}
 
     def check_for_request(self,state=MessageState):
@@ -131,7 +132,7 @@ class build_graph():
          
         locations_history=state["locations_history"]
         task_history=state["messages_history"]
-        print(task_history)
+        # print(task_history)
         current_task=""
         if(len(task_history)>0):
             current_task=task_history[-1].content
@@ -163,21 +164,22 @@ class build_graph():
         # you are a orchestrate agent, your task is to plan the traveling route to complete that task. consider completing task for each path at a time.
         follow the rules:
         1. some times task will not be specified just output the path.
-        2. always prefer starting from previous location.
+        2. always prefer starting from current location.
         3. choose locations only from this list (including spellings): ["current location","road","parking","park","waiting sofa","dining table","tv","kitchen","bedroom 3","bedroom 2","bedroom 1","store room","laundry","main door"]
         4. dont make any assumption about just do what is in the given prompt.
         5. just output task and route in json format such as [("task 1":task,"route":[start,end]),("task 2":task,"route":[start,end])] route must have 2 fields always
         """
         template = ChatPromptTemplate([
             ("system", content),
-            ("human", "previous_location: {previous_location} user_input:{user_input}"),
+            ("human", "user_input:{user_input}"),
         ])
         # print(state)
         chain = template | self.model
-        if(len(state["locations_history"])>0):
-            prev=state["locations_history"][-1].content
+        if("previous_location" in state.keys()):
+            prev=state["previous_location"]
         else:
             prev="current location"
+        # print(prev)
         answer = chain.invoke({"user_input":state["messages"][0].content,"previous_location":prev})
         print("#"*20)
         if(answer.content[:7]=="```json"):
@@ -193,7 +195,7 @@ class build_graph():
         # for i in messages:
         #     print(i)
         # print(answer)
-        return {"instructions": [response],"temp_inst":response, "locations_history": [last_route[-1]],"messages_history":[state["messages"][0].content]}
+        return {"instructions": [response],"temp_inst":response, "locations_history": [last_route[-1]],"messages_history":[state["messages"][0].content],"previous_location":last_route[-1]}
 
     def status_check(self,state=MessageState):
         status=state["status"]
@@ -256,7 +258,7 @@ class build_graph():
             chain = template | self.model
 
             answer = chain.invoke({"question":state["question"],"user_response":state["user_response"]})
-            print(answer)
+            # print(answer)
             if answer.content=="location":
                 return {"user_question_type":"location","messages":[HumanMessage(content=state["user_response"])]}
             return {"user_question_type":answer.content}
@@ -325,6 +327,7 @@ class build_graph():
         # response=self.graph.invoke({"messages":messages})
         response=self.graph.stream({"type_":type_,"messages":messages,"status":"writing"},config=config,stream_mode="values")
         last_event=[event for event in response]
+        # print(last_event)
         if last_event[-1]["question_type"]=="question":
             return [last_event[-1]["response"]]
         return self.output(last_event)
@@ -333,8 +336,9 @@ class build_graph():
         config={"configurable":{"thread_id":thread_id}}
         response=self.graph.stream({"type_":type_,"question":question,"user_response":user_response,"status":"writing"},config=config,stream_mode="values")
         last_event=[event for event in response]
+        # print(last_event)
         answer=[last_event[-1]["user_question_type"]]
-        print(answer)
+        # print(answer)
         if answer[0]=="location":
             return [answer]+[self.output(last_event)]
         
@@ -367,19 +371,19 @@ class build_graph():
         try :
             data_to_send_list=[]
             for i in AI_content:
-                print(i)
-                print("$"*20)
+            #     print(i)
+            #     print("$"*20)
                 data_to_send={}
                 if(i["function"]["name"]=="travel"):
-                    print(i["function"]["arguments"].split(",")[0].split(":")[1])
+                    # print(i["function"]["arguments"].split(",")[0].split(":")[1])
                     A = i["function"]["arguments"].split(",")[0].split(":")[1].replace('"', "")
                     B=i["function"]["arguments"].split(",")[1].split(":")[1].replace('"', "")
-                    data_to_send['A']=data[A[1:]]
+                    data_to_send['A']=data["current location"]
                     data_to_send['B']=data[B[1:-1]]
                     data_to_send_list.append(data_to_send)
                 else:
                     data_to_send_list.append(json.loads(i["function"]["arguments"])["text"])
-            print(data_to_send_list)
+            # print(data_to_send_list)
             
             return data_to_send_list
         except Exception as e:

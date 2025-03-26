@@ -5,6 +5,7 @@ from pydantic import BaseModel
 import uvicorn
 import numpy as np
 from PIL import Image
+from typing import Tuple
 # from plot_img import maze_repo
 from image_toMatrix import get_maze
 # from images_select import Select
@@ -13,6 +14,9 @@ from fastapi.encoders import jsonable_encoder
 import json
 from agent.robot_voice import build_graph
 graph=build_graph()
+from arduino_send import send_arduino
+
+send_arduino=send_arduino()
 
 sp=shortest_path()
 maze_fun = get_maze()
@@ -60,6 +64,9 @@ class an_user(BaseModel):
     name: str
     id: str = "1oivb3jnjn5nhjp98jnfg90n"
 
+class moveData(BaseModel):
+    direction: str
+
 @app.get("/")
 async def read_root(request: Request):
     return {"message": "you are on the right track"}
@@ -84,7 +91,8 @@ async def a_star_algo(a_star: a_star):
     print(f'end is {end1}')
     print("+"*50)
     path, directions = sp.a_star_search(maze, start1, end1)
-    return {"path": path, "directions": directions}
+    cus_array=send_arduino.angles_to_send(data=directions[1:])
+    return {"path": path, "directions": cus_array}
 
 
 @app.post("/chatInput")
@@ -124,7 +132,7 @@ async def save_last_path(end: end):
         data = json.load(file)
         data["lastPosition"] = end.end
         data["current location"] = end.end
-        print(data)
+        # print(data)
         file.seek(0)
         file.truncate()
         json.dump(data, file, indent=4)
@@ -141,6 +149,14 @@ async def getLastPath():
             return data
     except Exception as e:
         print(f"Error getting last path: {e}")
+
+@app.post("/moveVehicle")
+async def moveVehicle(data:moveData):
+    try:
+        sent = send_arduino.decode(data.direction)
+        return {"message":"moving"}
+    except Exception as e:
+        return {"message":str(e)}
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=5000)

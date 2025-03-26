@@ -67,7 +67,7 @@ class maze_repo:
                             sent = send_arduino.decode(cus_array[i])
                             # sendtoarduino(cus_array[i])
                             # time.sleep(0.1)  # Delay for visualization
-                        send_arduino.sendtoarduino('s')
+                        c
                         print('stop')
                         
         cid[0] = fig.canvas.mpl_connect('button_press_event', on_click)

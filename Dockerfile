@@ -19,6 +19,7 @@ COPY astar.py .
 COPY image_toMatrix.py .
 COPY lastpossition.json .
 COPY images/ ./images
+COPY arduino_send.py .
 
 EXPOSE 5000
 

@@ -32,6 +32,17 @@ function speak(text) {
     window.speechSynthesis.speak(utterance);
     }
 console.log(Thread_id);
+async function last_path() {
+    try {
+        const response = await fetch(API + "getLastPath");
+        const data = await response.json();
+        let last = data.lastPosition.split(" "); // Extract position
+        console.log("last_position:", last);
+        return last; // ✅ Now the function correctly returns the value
+    } catch (error) {
+        console.error("Error loading JSON:", error);
+    }
+}
 
 fetch(API + "getLastPath")
   .then(response => response.json())
@@ -63,7 +74,11 @@ function closePopup() {
 }
 
 function selectImage(name, path) {
-    document.getElementById("selectedText").innerText = "Selected: " + name;
+    let select_button=document.getElementById("selectImage");
+    select_button.style.display = "none";
+    document.getElementById("selectedText").innerText = name.toUpperCase();
+    document.getElementById("selectedText").style.fontSize = "2rem";
+    document.getElementById("selectedText").style.color = "#2980b9";
     let img = document.getElementById("selectedImage");
     img.src = path;
     img.style.display = "block";
@@ -194,7 +209,7 @@ canvas.addEventListener("click", function(event) {
             // Set timeout to stop recognition if user pauses for 2 seconds
             timeout = setTimeout(() => {
                 recognition.stop();
-            }, 3000);
+            }, 5000);
             updateText(transcript);
             post_to_api(transcript);
             
@@ -261,8 +276,10 @@ canvas.addEventListener("click", function(event) {
                     await mid_text(data[i]);  // Ensure mid_text completes before moving forward
                 } else {  
                     console.log("Processing route:", data[i]);
-                    let start = data[i].A.split(" ");
+                    let last_location=await last_path();
+                    let start = last_location;
                     let end = data[i].B.split(" ");
+                    console.log(start, end);
                     path.push(end);
                     await findShortestPath(maze, start, end);  // Wait for pathfinding to complete
                 }
@@ -353,7 +370,7 @@ canvas.addEventListener("click", function(event) {
             timeout = setTimeout(() => {
                 recognition.stop();
                 resolve(transcript); // Resolve the Promise with speech input
-            }, 3000);
+            }, 5000);
         };
     
         recognition.onend = function () {
@@ -434,9 +451,11 @@ canvas.addEventListener("click", function(event) {
     
     async function plotPath(path) {
         console.log("here is the paths");
+        directions=path.directions;
         path = path.path;
+        
         console.log("here is the paths to plot");
-        console.log(path);
+        console.log(directions);
     
         ctx.beginPath();
         ctx.moveTo(path[0].x, path[0].y);
@@ -445,9 +464,23 @@ canvas.addEventListener("click", function(event) {
             console.log(path[i][0], path[i][1]);
             await delay(100); // Wait for 100ms before drawing the next line
             drawArrow(ctx, path[i - 1][1], path[i - 1][0], path[i][1], path[i][0]);
+            moveVehicle(directions[i]);
         }
         save_last_path();
         return true; // Ensure the function completes properly
+    }
+
+    async function moveVehicle(direction){
+        const response = await fetch(API + "moveVehicle", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({direction:direction})
+        });
+
+        const data = await response.json();
+        console.log(data.message)
     }
     
     function delay(ms) {

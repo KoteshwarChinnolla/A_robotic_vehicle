@@ -1,7 +1,7 @@
 numpy==1.26.4
 matplotlib
 Pillow
-serial
+# serial
 langchain
 python-dotenv
 langchain-core
@@ -15,3 +15,4 @@ markdown2
 # langgraph-cli[inmem]
 # defusedxml
 duckduckgo-search
+pyserial
