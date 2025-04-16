@@ -97,11 +97,12 @@ async def a_star_algo(a_star: a_star):
 
 @app.post("/chatInput")
 async def chatInput(test:text):
-    try:
-        response=graph.response(test.text,test.name,test.id,"starting")
-        return {"response": response}
-    except Exception as e:
-        return {"response": ["please adjust your prompt"]}
+    # try:
+    response=graph.response(test.text,test.name,test.id,"starting")
+    return {"response": response}
+    # except Exception as e:
+    #     print(e)
+    #     return {"response": ["please adjust your prompt"]}
 
 @app.post("/status_on")
 async def status_on(status_on:status_on):

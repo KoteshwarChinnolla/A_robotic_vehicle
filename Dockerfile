@@ -1,18 +1,28 @@
-FROM python:3.12.4-alpine3.20
+FROM python:3.11-slim
 
-# We need curl for the health check
-RUN apk --no-cache add curl
+# RUN apt-get update && apt-get install -y \
+#     libfreetype6-dev \
+#     libpng-dev \
+#     libopenblas-dev \
+#     liblapack-dev \
+#     libjpeg-dev \
+#     libtiff5-dev \
+#     libx11-dev \
+#     libxft-dev \
+#     libglib2.0-0 \
+#     && rm -rf /var/lib/apt/lists/*
+
+# RUN apk --no-cache add curl
+
+# RUN pip install --upgrade pip setuptools wheel
 
 WORKDIR /app
 
-# First, copy dependencies only
+
 COPY requirements.txt .
 
-# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copying the app source separately significantly improves 
-# build time by using the cache if no new dependencies are added
 COPY app.py .
 COPY agent/ ./agent
 COPY astar.py .
@@ -24,4 +34,3 @@ COPY arduino_send.py .
 EXPOSE 5000
 
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "5000"]
-# CMD ["uvicorn", "--host", "0.0.0.0:8080", "app:app"]

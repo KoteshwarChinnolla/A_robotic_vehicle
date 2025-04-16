@@ -11,13 +11,23 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_groq import ChatGroq
 from agent.tools import tools
 from langgraph.checkpoint.memory import MemorySaver
-from langchain.output_parsers import XMLOutputParser
+from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 import json
 from langchain_core.messages import RemoveMessage
+from pydantic import BaseModel, Field
+from typing import List, Any, TypedDict, Annotated
 
 load_dotenv()
 os.environ["GROQ_API_KEY"]= os.getenv("GROQ_API_KEY")
+
+class Ref(BaseModel):
+    task: str = Field(description="Task given to travel")
+    start: str = Field(description='Starting position if given, otherwise consider as "current location"')
+    end: str = Field(description="Destination for the task to complete")
+
+class Plan(BaseModel):
+    plan: List[Ref] = Field(description="list of all the given tasks")
 
 class MessageState(TypedDict):
     messages:str
@@ -44,7 +54,7 @@ class build_graph():
     def __init__(self):
 
         t=tools()
-        self.model=ChatGroq(model="qwen-2.5-32b")
+        self.model=ChatGroq(model="llama-3.3-70b-versatile")
         self.travel=t.travel
         self.speak=t.speak
         self.memory=MemorySaver()
@@ -159,7 +169,9 @@ class build_graph():
         messages=state["instructions"]
         return {"instructions":[RemoveMessage(id=m.id) for m in messages]}
     def orchestrate(self,state=MessageState):
-        parser = XMLOutputParser(tags=["task","route"])
+        format = json.dumps(Plan.schema(), indent=2)
+        print(format)
+        format = json.loads(format)
         content = """
         # you are a orchestrate agent, your task is to plan the traveling route to complete that task. consider completing task for each path at a time.
         follow the rules:
@@ -167,35 +179,47 @@ class build_graph():
         2. always prefer starting from current location.
         3. choose locations only from this list (including spellings): ["current location","road","parking","park","waiting sofa","dining table","tv","kitchen","bedroom 3","bedroom 2","bedroom 1","store room","laundry","main door"]
         4. dont make any assumption about just do what is in the given prompt.
-        5. just output task and route in json format such as [("task 1":task,"route":[start,end]),("task 2":task,"route":[start,end])] route must have 2 fields always
+        5. just output task and route in Format {format}  route must have 2 fields always, just output the given format dont write anything.
         """
+
+        parser = JsonOutputParser(pydantic_object=Plan)
+
         template = ChatPromptTemplate([
             ("system", content),
             ("human", "user_input:{user_input}"),
         ])
         # print(state)
-        chain = template | self.model
+        chain = template | self.model | parser
         if("previous_location" in state.keys()):
             prev=state["previous_location"]
         else:
             prev="current location"
         # print(prev)
-        answer = chain.invoke({"user_input":state["messages"][0].content,"previous_location":prev})
+        try:
+            answer = chain.invoke({"user_input":state["messages"][0].content,"previous_location":prev,"format":parser.get_format_instructions()})
+            print(answer)
+        except Exception as e:
+            print("ERROR"*30)
+            print(e)
         print("#"*20)
-        if(answer.content[:7]=="```json"):
-            response=answer.content[7:-3]
-        else:
-            response=answer.content
-        if response[0]=='{':
-            response='['+response+']'
+        # if(answer.content[:7]=="```json"):
+        #     response=answer.content[7:-3]
+        # else:
+        #     response=answer.content
+        # if response[0]=='{':
+        #     response='['+response+']'
+        response=[]
+        for i in answer["plan"]:
+            response.append({"task":i["task"],"route":[i["start"],i["end"]]})
 
         print(response)
-        last_route=json.loads(response)[-1]["route"]
+        last_route=response[-1]["route"]
+        print(last_route)
         messages = state["instructions"]
         # for i in messages:
         #     print(i)
         # print(answer)
-        return {"instructions": [response],"temp_inst":response, "locations_history": [last_route[-1]],"messages_history":[state["messages"][0].content],"previous_location":last_route[-1]}
+        return {"instructions": [str(response)],"temp_inst":str(response), "locations_history": [last_route[-1]],"messages_history":[state["messages"][0].content],"previous_location":last_route[-1]}
 
     def status_check(self,state=MessageState):
         status=state["status"]

@@ -2,7 +2,8 @@
 services:
   app:
     image: robotic_car:latest
-    container_name: vehicle
+    platform: linux/amd64
+    container_name: vehicle_real
     ports:
       - 5000:5000
     build:
@@ -11,6 +12,9 @@ services:
 
     env_file:
       - .env
+
+    # devices:
+    #   - /dev/ttyUSB0
 
     # volumes:
     #   - ./lastpossition.json:/app/lastpossition.json
