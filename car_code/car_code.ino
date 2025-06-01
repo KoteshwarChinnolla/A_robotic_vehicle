@@ -8,7 +8,6 @@ AF_DCMotor motor4(4);
 char command;
 
 void setup() {  
-  pinMode(2,OUTPUT);   
  Serial.begin(9600); 
  Stop();
 }

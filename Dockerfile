@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
-RUN apk --no-cache add curl
+# RUN apk --no-cache add curl
 
 RUN pip install --upgrade pip setuptools wheel
 
