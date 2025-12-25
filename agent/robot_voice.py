@@ -20,6 +20,7 @@ from typing import List, Any, TypedDict, Annotated
 
 load_dotenv()
 os.environ["GROQ_API_KEY"]= os.getenv("GROQ_API_KEY")
+MODEL = os.getenv("GROQ_MODEL") or "llama-3.3-70b-versatile"
 
 class Ref(BaseModel):
     task: str = Field(description="Task given to travel")
@@ -54,7 +55,7 @@ class build_graph():
     def __init__(self):
 
         t=tools()
-        self.model=ChatGroq(model="llama-3.3-70b-versatile")
+        self.model=ChatGroq(model=MODEL)
         self.travel=t.travel
         self.speak=t.speak
         self.memory=MemorySaver()

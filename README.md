@@ -72,28 +72,73 @@ To make you understand let us consider an example - if the user asks to bring so
 
 
 # To run it on your local system
+Follow the steps below to run the robotic vehicle project on your local system using Docker.
 
-> **Step 1** : Install docker on your system
+## Prerequisites
+
+ - Docker installed on your system
+
+ - Docker Desktop running (Docker Engine must be active)
+
+> **Step 1** : Install Docker for your operating system if it’s not already installed.
 > 
-> **Step 2** : Clone this repo by using
+> **Step 2** : Clone the project repository using Git:
 ```python
 git clone https://github.com/KoteshwarChinnolla/A_robotic_vehicle
 ```
-> **Step 3**: " create .env file put Langchain and Groq API key
+> **Step 3**: " Create a .env file in the root directory and add your configuration details.
 ```python
-LANG_CHAIN_API_KEY=""
-GROQ_API_KEY=""
+ARDUINO_PORT=""   # Specify the Arduino port if connected (optional)
+                 # Examples:
+                 # Windows: COM7
+                 # Linux: /dev/ttyUSB0
+
+GROQ_API_KEY=""   # Your Groq API key
+GROQ_MODEL=""     # Optional: default is llama-3.3-70b-versatile
 ```
-> **Step 4**: open the docker desktop so that it turns on the docker Engine
+
+You can leave ARDUINO_PORT empty if no Arduino is connected.
+
+> **Step 4**: Ensure Docker Desktop is running and the Docker Engine is active.
 > 
 > **Step 5**:run
 ```python
 docker compose up --build
 ```
-> on your terminal
-> 
-> Now run the HTML file (Go live) so that you can access it
 
 
+## Direct Docker Commands
+
+### Docker Command for Local Machine (without Arduino)
+
+If you're running the container on your local machine and don't have an Arduino, you can use the following command:
+
+```bash
+docker run -d --name vehicle_real -p 5000:5000 --env GROQ_API_KEY=your_groq_api_key_here koti21/robotic_car:v0.0.1
+```
 
 
+### Docker Command for Raspberry Pi (with Arduino)
+
+If you're running the container on a Raspberry Pi and have an Arduino connected, use the following command:
+
+```bash
+docker run -d --name vehicle_real -p 5000:5000 --env GROQ_API_KEY=your_groq_api_key_here --env ARDUINO_PORT=/dev/ttyUSB0 koti21/robotic_car:v0.0.1
+```
+
+Make sure to replace `your_groq_api_key_here` with your actual `GROQ_API_KEY` and update the `ARDUINO_PORT` to match the correct port where your Arduino is connected.
+
+You can also specify the model you would like to use
+just add the `GROQ_MODEL` default will be llama-3.3-70b-versatile
+
+
+# Inference
+
+After a successful run:
+1. Open your browser
+2. Navigate to: 
+```bash
+http://localhost:5000/ui/
+```
+3. select an image
+4. Type or speak your thoughts to interact with the system
