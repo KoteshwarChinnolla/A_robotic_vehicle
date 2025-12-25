@@ -1,3 +1,13 @@
+
+
+## This is the source code of the paper
+
+[Natural Language Based Autonomous Navigation Vehicle](https://ieeexplore.ieee.org/document/11118685)
+
+```
+C. Koteshwar, M. D. Chaithanya, M. Abdul Kaleem and A. Vishnubhatla, "Natural Language Based Autonomous Navigation Vehicle," 2025 International Conference on Computing Technologies (ICOCT), Bengaluru, India, 2025, pp. 1-7, doi: 10.1109/ICOCT64433.2025.11118685. keywords: {Location awareness;Computer vision;Visualization;Laser radar;Navigation;Computational modeling;Natural languages;Brain modeling;Motors;Collision avoidance;LLM;SSH;VNC},
+```
+
 ## Functionalities of the Vehicle
 > 1. Understanding Natural language
 > 2. Transforming things from one place to another
