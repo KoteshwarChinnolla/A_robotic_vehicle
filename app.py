@@ -15,12 +15,11 @@ import json
 from agent.robot_voice import build_graph
 graph=build_graph()
 from path_follower.arduino_send import send_arduino
+from fastapi.staticfiles import StaticFiles
 
 send_arduino=send_arduino()
-
 sp=shortest_path()
 maze_fun = get_maze()
-
 app = FastAPI()
 
 app.add_middleware(
@@ -30,6 +29,8 @@ app.add_middleware(
     allow_methods=["*"],  # Allow all HTTP methods, including OPTIONS
     allow_headers=["*"],  # Allow all headers
 )
+
+app.mount("/ui", StaticFiles(directory="static", html=True), name="static")
 
 
 class image_link(BaseModel):
@@ -66,10 +67,6 @@ class an_user(BaseModel):
 
 class moveData(BaseModel):
     direction: str
-
-@app.get("/")
-async def read_root(request: Request):
-    return {"message": "you are on the right track"}
 
 
 @app.post("/plot_maze")

@@ -1,7 +1,7 @@
 ---
 services:
   app:
-    image: koti03/robotic_car_rasp:latest
+    image: koti21/robotic_car:v0.0.1
     # platform: linux/amd64
     container_name: vehicle_real
     ports:

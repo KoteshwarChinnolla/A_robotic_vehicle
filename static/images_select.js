@@ -2,9 +2,13 @@
 const API ="http://localhost:5000/";
 // const API = "http://192.168.6.136:5000/";
 
+const baseUrl = window.location.origin + "/";
+console.log("baseUrl" + baseUrl)
+
+
 const images = {
-    "house": "../images/home_architecture.jpg",
-    "Company": "../images/architecture_home.png"
+    "house": "/ui/images/home_architecture.jpg",
+    "Company": "/ui/images/architecture_home.png"
 };
 
 let maze = []; // Store maze globally
@@ -32,7 +36,8 @@ function speak(text) {
     const utterance = new SpeechSynthesisUtterance(text);
     window.speechSynthesis.speak(utterance);
     }
-console.log(Thread_id);
+
+    
 async function last_path() {
     try {
         const response = await fetch(API + "getLastPath");
@@ -62,9 +67,13 @@ function openPopup() {
     grid.innerHTML = "";
     for (let name in images) {
         let img = document.createElement("img");
-        img.src = images[name];
+        image_path = images[name];
+        img.src = image_path.replace(API, "");
         img.alt = name;
-        img.onclick = () => selectImage(name, images[name]);
+        img.onclick = (e) => {
+            e.stopPropagation();
+            selectImage(name, image_path.replace(API, ""));
+        };
         grid.appendChild(img);
     }
     document.getElementById("popup").style.display = "block";
@@ -104,13 +113,12 @@ function proceed() {
     // Hide the selected image and show the canvas
     img.style.display = "none";
     canvas.style.display = "block";
-    console.log((img.src).replace("http://127.0.0.1:5500/", ""));
     fetch(API + "plot_maze", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ image_link: (img.src).replace("http://127.0.0.1:5500/", "") }) // Pass image src
+        body: JSON.stringify({ image_link: (img.src).replace(API+"ui", "static") }) // Pass image src
     })
     .then(response => response.json())
     .then(data => {

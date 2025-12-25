@@ -26,8 +26,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY app.py .
 COPY agent/ ./agent
 COPY path_follower/ ./path_follower
-
-COPY images/ ./images
+COPY static/ ./static
 
 
 EXPOSE 5000
