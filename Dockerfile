@@ -25,11 +25,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app.py .
 COPY agent/ ./agent
-COPY astar.py .
-COPY image_toMatrix.py .
-COPY lastpossition.json .
+COPY path_follower/ ./path_follower
+
 COPY images/ ./images
-COPY arduino_send.py .
+
 
 EXPOSE 5000
 

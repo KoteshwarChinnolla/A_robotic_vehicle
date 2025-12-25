@@ -5,8 +5,21 @@ import serial
 import time
 from PIL import Image
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
-# arduino = serial.Serial(port='COM7', baudrate=9600, timeout=1)
+arduino_port = os.getenv("ARDUINO_PORT")   # e.g. "COM7"
+baudrate = os.getenv("ARDUINO_BAUDRATE")   # e.g. "9600"
+
+if arduino_port is not None:
+    baudrate = int(baudrate) if baudrate is not None else 9600
+    arduino = serial.Serial(
+        port=arduino_port,
+        baudrate=baudrate,
+        timeout=1
+    )
+
 class send_arduino:
     def angles_to_send(self,data):
         # print(data)
@@ -25,7 +38,6 @@ class send_arduino:
         p="left"
         for i in data:
             if(p==i):
-                # print('f')
                 send.append("f")
                 continue
             ca=dec[i]
@@ -38,10 +50,8 @@ class send_arduino:
             pa=ca
             p=i
             if(c<a):
-                # print(f'c{c}')
                 send.append(f'c{c}')
             else:
-                # print(f'a{a}')
                 send.append(f'a{a}')
 
         return send
@@ -51,25 +61,23 @@ class send_arduino:
         angle=0
         if(data=='f'):
             rotate=' '
-            # print('sent f')
             self.sendtoarduino('f')
         else:
             angle=int(data[1:])
             if(data[0]=='c'):
                 for i in range(angle//45):
                     rotate+=' r'
-                    # print('sent r')
                     self.sendtoarduino('r')
             else:
                 for i in range(angle//45):
                     rotate+=' l'
-                    # print('sent l')
                     self.sendtoarduino('l')
         return rotate
 
     def sendtoarduino(self,data):
         print('sent',data)
-        # arduino.write((data + '\n').encode())
+        if arduino_port is not None:
+            arduino.write((data + '\n').encode())
         if data=='f':
             time.sleep(0.1)
         else:

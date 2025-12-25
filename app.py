@@ -7,14 +7,14 @@ import numpy as np
 from PIL import Image
 from typing import Tuple
 # from plot_img import maze_repo
-from image_toMatrix import get_maze
+from path_follower.image_toMatrix import get_maze
 # from images_select import Select
-from astar import shortest_path
+from path_follower.astar import shortest_path
 from fastapi.encoders import jsonable_encoder
 import json
 from agent.robot_voice import build_graph
 graph=build_graph()
-from arduino_send import send_arduino
+from path_follower.arduino_send import send_arduino
 
 send_arduino=send_arduino()
 
@@ -129,7 +129,7 @@ async def user_response(text:an_user):
 @app.post("/saveLastPath")
 async def save_last_path(end: end):
     print("+" * 50)
-    with open("lastpossition.json", "r+") as file:
+    with open("path_follower/lastpossition.json", "r+") as file:
         data = json.load(file)
         data["lastPosition"] = end.end
         data["current location"] = end.end
@@ -145,7 +145,7 @@ async def save_last_path(end: end):
 @app.get("/getLastPath")
 async def getLastPath():
     try:
-        with open("lastpossition.json", "r") as file:
+        with open("path_follower/lastpossition.json", "r") as file:
             data = json.load(file)
             return data
     except Exception as e:

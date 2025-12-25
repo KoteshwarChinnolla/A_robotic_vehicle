@@ -168,6 +168,7 @@ class build_graph():
     def clear_instruction(self,state=MessageState):
         messages=state["instructions"]
         return {"instructions":[RemoveMessage(id=m.id) for m in messages]}
+        
     def orchestrate(self,state=MessageState):
         format = json.dumps(Plan.schema(), indent=2)
         print(format)
@@ -382,33 +383,33 @@ class build_graph():
 
         if(len(AI_message)==0):
             return "is there any thing you want me to do ?"
-        # print(AI_message)
+        
         # for i in AI_message:
         #     print(i)
         if "tool_calls" in AI_message[-1].additional_kwargs:
             AI_content=AI_message[-1].additional_kwargs["tool_calls"]
         else:
             AI_content=AI_message[-1].content
-        with open("lastpossition.json", "r") as f:
+        with open("path_follower/lastpossition.json", "r") as f:
             data = json.load(f)
-        # print(data)
+        
         try :
             data_to_send_list=[]
             for i in AI_content:
-            #     print(i)
-            #     print("$"*20)
-                data_to_send={}
-                if(i["function"]["name"]=="travel"):
-                    # print(i["function"]["arguments"].split(",")[0].split(":")[1])
-                    A = i["function"]["arguments"].split(",")[0].split(":")[1].replace('"', "")
-                    B=i["function"]["arguments"].split(",")[1].split(":")[1].replace('"', "")
-                    data_to_send['A']=data["current location"]
-                    data_to_send['B']=data[B[1:-1]]
+                if i["function"]["name"] == "travel":
+                    args = json.loads(i["function"]["arguments"])
+
+                    data_to_send = {
+                        "A": data["current location"],
+                        "B": data[args["B"]]
+                    }   
                     data_to_send_list.append(data_to_send)
+
                 else:
-                    data_to_send_list.append(json.loads(i["function"]["arguments"])["text"])
-            # print(data_to_send_list)
+                    args = json.loads(i["function"]["arguments"])
+                    data_to_send_list.append(args["text"])
             
             return data_to_send_list
         except Exception as e:
+            print(e)
             return "please adjust the prompt and try again"

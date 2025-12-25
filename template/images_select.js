@@ -1,6 +1,6 @@
 // const API = "http://127.0.0.1:5000/";
-// const API ="http://localhost:5000/";
-const API = "http://192.168.6.136:5000/";
+const API ="http://localhost:5000/";
+// const API = "http://192.168.6.136:5000/";
 
 const images = {
     "house": "../images/home_architecture.jpg",
