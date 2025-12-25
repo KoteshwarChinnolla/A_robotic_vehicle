@@ -129,7 +129,7 @@ docker run -d --name vehicle_real -p 5000:5000 --env GROQ_API_KEY=your_groq_api_
 Make sure to replace `your_groq_api_key_here` with your actual `GROQ_API_KEY` and update the `ARDUINO_PORT` to match the correct port where your Arduino is connected.
 
 You can also specify the model you would like to use
-just add the `GROQ_MODEL` default will be llama-3.3-70b-versatile
+just add the `GROQ_MODEL` as env default will be `llama-3.3-70b-versatile`
 
 
 # Inference
